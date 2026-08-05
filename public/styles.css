@@ -1,0 +1,261 @@
+:root {
+  --ink: #10151c;
+  --paper: #f4f6f8;
+  --card: #ffffff;
+  --line: #dde2e8;
+  --accent: #0a6e4e;
+  --accent-ink: #ffffff;
+  --error: #b3261e;
+  --muted: #5c6672;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  background: #e4e7ec;
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
+}
+
+.phone {
+  width: 100%;
+  max-width: 380px;
+  min-height: 680px;
+  background: var(--paper);
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  box-shadow: 0 20px 50px rgba(16, 21, 28, 0.18);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--ink);
+  color: #fff;
+}
+
+.badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  padding: 28px 22px;
+  flex: 1;
+}
+
+.screen.active {
+  display: flex;
+}
+
+h1 {
+  font-size: 21px;
+  margin: 0 0 18px;
+  letter-spacing: -0.01em;
+}
+
+.back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 0 14px;
+  cursor: pointer;
+}
+
+.amount-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.amount-preview {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  margin: -6px 0 20px;
+}
+
+#amount-input {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 16px 14px;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--mono);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn.primary:hover {
+  filter: brightness(1.08);
+}
+
+.method-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.method-btn:hover {
+  border-color: var(--accent);
+}
+
+.method-icon {
+  font-size: 26px;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.method-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.method-text strong {
+  font-size: 15px;
+}
+
+.method-text small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row label {
+  flex: 1;
+}
+
+input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 11px;
+  font-size: 15px;
+  font-family: var(--mono);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--ink);
+}
+
+input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.status {
+  margin-top: 14px;
+  font-size: 13px;
+  font-family: var(--mono);
+  min-height: 18px;
+  line-height: 1.5;
+}
+
+.status.pending { color: var(--muted); }
+.status.success { color: var(--accent); font-weight: 600; }
+.status.error { color: var(--error); font-weight: 600; }
+
+.qr-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.qr-image {
+  width: 220px;
+  height: 220px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+}
+
+#screen-done {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.done-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+#screen-done .amount-preview {
+  margin-bottom: 28px;
+}
