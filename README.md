@@ -57,6 +57,33 @@ Open http://localhost:3000
   find the pending test charge → **Actions > Mark as Successful**
 - The page polls every 3s and moves to the confirmation screen once you do that
 
+## Apple Pay / Google Pay (UI only — not wired up)
+
+There's a third method on the method-select screen for this. Tapping either button
+shows a message instead of charging — this is intentional, not a bug. It's there to
+show the intended flow (customer taps phone, no typing) without pretending it's live.
+
+**To make Google Pay actually work:**
+1. Register a merchant ID in the Google Pay Business Console
+2. Add the Google Pay JS button (`https://pay.google.com/gp/p/js/pay.js`)
+3. On payment, Google returns a payment token → forward it to Omise.js → get a card
+   token → charge it exactly like the existing card flow (same `/api/charge-card` route)
+4. See: https://docs.omise.co/googlepay
+
+**To make Apple Pay actually work:**
+1. Register an Apple Merchant ID in the Apple Developer portal
+2. Host a domain verification file at `/.well-known/apple-developer-merchantid-domain-association`
+   (requires HTTPS — Render gives you this automatically)
+3. Use Apple's `ApplePaySession` JS API or the Omise iOS SDK's `setupApplePay()` if building
+   a native app
+4. Forward the resulting payment token to Omise.js, get a card token, charge it the same way
+
+**Note:** neither of these is "tap a physical contactless card against the phone" —
+that's a different capability (true Tap to Pay), which requires a certified SDK from a
+provider like Stripe Terminal or Visa's Tap to Pay SDK, plus a native app. Omise doesn't
+currently publish its own Tap to Pay SDK. That's a multi-week integration with a separate
+vendor relationship, not something to bolt onto this POC.
+
 ## How it maps to the Omise API
 
 | Action | Endpoint |

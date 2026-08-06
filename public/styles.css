@@ -237,6 +237,50 @@ input:focus {
   background: #fff;
 }
 
+.wallet-btn {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.apple-pay-btn {
+  background: #000;
+  color: #fff;
+  font-family: -apple-system, sans-serif;
+  font-size: 20px;
+}
+
+.google-pay-btn {
+  background: #fff;
+  color: #3c4043;
+  border: 1px solid var(--line);
+}
+
+.gpay-g {
+  color: #4285f4;
+  font-weight: 800;
+}
+
+.wallet-note {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: #fdf3ea;
+  border: 1px solid #f0ddc4;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #6b4d1f;
+}
+
 #screen-done {
   align-items: center;
   justify-content: center;

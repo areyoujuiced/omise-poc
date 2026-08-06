@@ -45,6 +45,13 @@
         <small>Customer scans with banking app</small>
       </span>
     </button>
+    <button class="method-btn" id="btn-select-wallet">
+      <span class="method-icon">📱</span>
+      <span class="method-text">
+        <strong>Apple Pay / Google Pay</strong>
+        <small>Tap phone — no typing needed</small>
+      </span>
+    </button>
   </section>
 
   <!-- Screen 3a: card entry -->
@@ -87,6 +94,26 @@
     <p class="amount-preview" id="qr-amount-preview"></p>
     <div id="qr-image-wrap" class="qr-wrap"></div>
     <p id="qr-status" class="status"></p>
+  </section>
+
+  <!-- Screen 3c: wallet (Apple Pay / Google Pay) -->
+  <section class="screen" id="screen-wallet">
+    <button class="back" data-back="screen-method">‹ Back</button>
+    <h1>Tap to pay</h1>
+    <p class="amount-preview" id="wallet-amount-preview"></p>
+    <button class="wallet-btn apple-pay-btn" id="btn-apple-pay">
+       Pay
+    </button>
+    <button class="wallet-btn google-pay-btn" id="btn-google-pay">
+      <span class="gpay-g">G</span> Pay
+    </button>
+    <p id="wallet-status" class="status"></p>
+    <div class="wallet-note">
+      <strong>Not wired up yet.</strong> This is the intended flow — customer taps
+      their phone, no card entry. Needs an Apple Merchant ID + domain verification
+      (Apple Pay) and a Google Pay Business Console merchant ID (Google Pay) before
+      these buttons can charge for real. See README for what's required.
+    </div>
   </section>
 
   <!-- Screen 4: done -->

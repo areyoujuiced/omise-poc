@@ -52,6 +52,29 @@ document.getElementById('btn-select-qr').addEventListener('click', () => {
   showScreen('screen-qr');
 });
 
+// --- Screen 2 -> 3c (wallet: Apple Pay / Google Pay) ---
+document.getElementById('btn-select-wallet').addEventListener('click', () => {
+  document.getElementById('wallet-amount-preview').textContent = formatBaht(currentAmountBaht);
+  setStatus('wallet-status', '', 'pending');
+  showScreen('screen-wallet');
+});
+
+document.getElementById('btn-apple-pay').addEventListener('click', () => {
+  setStatus(
+    'wallet-status',
+    'Not connected: needs an Apple Merchant ID + domain verification file before this can charge a real card.',
+    'error'
+  );
+});
+
+document.getElementById('btn-google-pay').addEventListener('click', () => {
+  setStatus(
+    'wallet-status',
+    'Not connected: needs a Google Pay Business Console merchant ID before this can charge a real card.',
+    'error'
+  );
+});
+
 // --- Card charge ---
 const cardForm = document.getElementById('card-form');
 cardForm.addEventListener('submit', (e) => {
