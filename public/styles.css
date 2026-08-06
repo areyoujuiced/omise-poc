@@ -28,7 +28,6 @@ body {
 .phone {
   width: 100%;
   max-width: 380px;
-  min-height: 620px;
   background: var(--paper);
   border-radius: 28px;
   border: 1px solid var(--line);
@@ -201,7 +200,6 @@ body {
   display: none;
   flex-direction: column;
   padding: 22px 22px;
-  flex: 1;
 }
 
 .screen.active {
@@ -438,5 +436,11 @@ input:focus {
 }
 
 #screen-done .amount-preview {
-  margin-bottom: 28px;
+  margin-bottom: 6px;
+}
+
+.thank-you {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0 0 24px;
 }
