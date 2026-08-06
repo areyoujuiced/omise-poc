@@ -166,6 +166,7 @@ truemoneyForm.addEventListener('submit', async (e) => {
 document.getElementById('btn-select-wallet').addEventListener('click', () => {
   document.getElementById('wallet-amount-preview').textContent = formatBaht(currentAmountBaht);
   setStatus('wallet-status', '', 'pending');
+  document.getElementById('contactless-visual').style.display = 'none';
   showScreen('screen-wallet');
 });
 
@@ -178,6 +179,7 @@ document.getElementById('btn-apple-pay').addEventListener('click', () => {
 });
 
 document.getElementById('btn-contactless').addEventListener('click', () => {
+  document.getElementById('contactless-visual').style.display = 'flex';
   setStatus(
     'wallet-status',
     'Not connected: reading a physical contactless card needs a certified terminal SDK (e.g. Stripe Terminal, Visa Tap to Pay) plus a native app — same limitation as Apple Pay, not something a website can do. See README.',
