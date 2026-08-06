@@ -52,6 +52,13 @@
         <small>Tap phone — no typing needed</small>
       </span>
     </button>
+    <button class="method-btn" id="btn-select-truemoney">
+      <span class="method-icon">💰</span>
+      <span class="method-text">
+        <strong>TrueMoney Wallet</strong>
+        <small>Pay with phone number + OTP</small>
+      </span>
+    </button>
   </section>
 
   <!-- Screen 3a: card entry -->
@@ -114,6 +121,22 @@
       (Apple Pay) and a Google Pay Business Console merchant ID (Google Pay) before
       these buttons can charge for real. See README for what's required.
     </div>
+  </section>
+
+  <!-- Screen 3d: TrueMoney Wallet -->
+  <section class="screen" id="screen-truemoney">
+    <button class="back" data-back="screen-method">‹ Back</button>
+    <h1>TrueMoney Wallet</h1>
+    <p class="amount-preview" id="truemoney-amount-preview"></p>
+    <form id="truemoney-form">
+      <label>
+        Customer phone number
+        <input type="tel" id="truemoney-phone" inputmode="numeric" placeholder="0812345678" required>
+      </label>
+      <button type="submit" class="btn primary">Send payment request</button>
+      <p id="truemoney-status" class="status"></p>
+      <div id="truemoney-action-wrap"></div>
+    </form>
   </section>
 
   <!-- Screen 4: done -->

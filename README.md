@@ -57,6 +57,14 @@ Open http://localhost:3000
   find the pending test charge → **Actions > Mark as Successful**
 - The page polls every 3s and moves to the confirmation screen once you do that
 
+**TrueMoney Wallet path:**
+- Enter any Thai-format phone number, e.g. `0812345678`
+- Submits to Omise as a `truemoney_wallet` source — in test mode you'll either see a
+  "Continue in TrueMoney" link (if Omise returns an `authorize_uri`) or it'll sit waiting
+  for OTP confirmation
+- Mark the pending test charge "Successful" from your Omise dashboard the same way as QR
+  to move it to the confirmation screen
+
 ## Apple Pay / Google Pay (UI only — not wired up)
 
 There's a third method on the method-select screen for this. Tapping either button
@@ -91,6 +99,7 @@ vendor relationship, not something to bolt onto this POC.
 | Tokenize card (browser, public key) | `Omise.createToken('card', ...)` → `POST vault.omise.co/tokens` |
 | Charge the token (server, secret key) | `POST api.omise.co/charges` with `card=tokn_...` |
 | Create PromptPay QR (server, secret key) | `POST api.omise.co/charges` with `source[type]=promptpay` |
+| Create TrueMoney Wallet charge (server, secret key) | `POST api.omise.co/charges` with `source[type]=truemoney_wallet` + `source[phone_number]` |
 | Poll charge status | `GET api.omise.co/charges/{id}` |
 
 ## Notes / next steps for a real integration

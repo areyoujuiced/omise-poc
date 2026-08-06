@@ -76,6 +76,34 @@ app.post('/api/charge-qr', async (req, res) => {
   }
 });
 
+// Create a TrueMoney Wallet charge
+app.post('/api/charge-truemoney', async (req, res) => {
+  const { amount, phone } = req.body;
+  if (!amount || !phone) {
+    return res.status(400).json({ error: 'amount and phone are required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(amount),
+      currency: 'thb',
+      'source[type]': 'truemoney_wallet',
+      'source[phone_number]': phone,
+    });
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Poll a charge's status (used by the QR flow to detect payment completion)
 app.get('/api/charge-status/:id', async (req, res) => {
   try {

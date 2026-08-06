@@ -52,6 +52,62 @@ document.getElementById('btn-select-qr').addEventListener('click', () => {
   showScreen('screen-qr');
 });
 
+// --- Screen 2 -> 3d (TrueMoney Wallet) ---
+document.getElementById('btn-select-truemoney').addEventListener('click', () => {
+  document.getElementById('truemoney-amount-preview').textContent = formatBaht(currentAmountBaht);
+  setStatus('truemoney-status', '', 'pending');
+  document.getElementById('truemoney-action-wrap').innerHTML = '';
+  document.getElementById('truemoney-form').reset();
+  showScreen('screen-truemoney');
+});
+
+const truemoneyForm = document.getElementById('truemoney-form');
+truemoneyForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearInterval(pollInterval);
+  const amountSatang = Math.round(currentAmountBaht * 100);
+  const phone = document.getElementById('truemoney-phone').value;
+
+  setStatus('truemoney-status', 'Sending payment request…', 'pending');
+  document.getElementById('truemoney-action-wrap').innerHTML = '';
+
+  try {
+    const res = await fetch('/api/charge-truemoney', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: amountSatang, phone }),
+    });
+    const data = await res.json();
+    if (data.object === 'error') {
+      setStatus('truemoney-status', `Failed: ${data.message}`, 'error');
+      return;
+    }
+
+    const authorizeUri = data.authorize_uri || (data.source && data.source.authorize_uri);
+    if (authorizeUri) {
+      document.getElementById('truemoney-action-wrap').innerHTML =
+        `<a href="${authorizeUri}" target="_blank" rel="noopener" class="btn primary" style="display:block;text-align:center;text-decoration:none;margin-top:10px;">Continue in TrueMoney</a>`;
+      setStatus('truemoney-status', 'Waiting for customer to confirm in TrueMoney…', 'pending');
+    } else {
+      setStatus('truemoney-status', `Waiting for OTP confirmation — ${data.id}`, 'pending');
+    }
+
+    pollInterval = setInterval(async () => {
+      const statusRes = await fetch(`/api/charge-status/${data.id}`);
+      const statusData = await statusRes.json();
+      if (statusData.status === 'successful') {
+        clearInterval(pollInterval);
+        showDone(true, data.id);
+      } else if (statusData.status === 'failed' || statusData.status === 'expired') {
+        clearInterval(pollInterval);
+        setStatus('truemoney-status', `Payment ${statusData.status}`, 'error');
+      }
+    }, 3000);
+  } catch (err) {
+    setStatus('truemoney-status', `Request failed: ${err.message}`, 'error');
+  }
+});
+
 // --- Screen 2 -> 3c (wallet: Apple Pay / Google Pay) ---
 document.getElementById('btn-select-wallet').addEventListener('click', () => {
   document.getElementById('wallet-amount-preview').textContent = formatBaht(currentAmountBaht);
