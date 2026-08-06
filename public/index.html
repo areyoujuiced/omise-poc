@@ -29,7 +29,7 @@
 
   <!-- Screen 1: amount -->
   <section class="screen active" id="screen-amount">
-    <h1>Charge a customer</h1>
+    <h1>Total Due:</h1>
     <label class="amount-label">
       Amount (THB)
       <input type="number" id="amount-input" min="1" step="0.01" value="1.00">
@@ -120,11 +120,17 @@
     <button class="back" data-back="screen-method">‹ Back</button>
     <h1>Tap to Pay</h1>
     <p class="amount-preview" id="wallet-amount-preview"></p>
-    <button class="wallet-btn apple-pay-btn" id="btn-apple-pay">
-       Tap to Pay
+    <button class="wallet-btn" id="btn-apple-pay">
+      <img src="assets/apple-logo.png" alt="Apple Pay" class="brand-icon-img">
+      <span>Pay</span>
     </button>
-    <button class="wallet-btn google-pay-btn" id="btn-google-pay">
-      <span class="gpay-g">G</span> Pay — Tap to Pay
+    <button class="wallet-btn" id="btn-google-pay">
+      <span class="gpay-g">G</span> Pay
+    </button>
+    <button class="wallet-btn" id="btn-contactless">
+      <img src="assets/visa-logo.png" alt="Visa" class="brand-icon-img">
+      <span class="card-divider"></span>
+      <img src="assets/mastercard-logo.png" alt="Mastercard" class="brand-icon-img">
     </button>
     <p id="wallet-status" class="status"></p>
     <div class="wallet-note">

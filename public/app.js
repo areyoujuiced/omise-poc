@@ -177,6 +177,14 @@ document.getElementById('btn-apple-pay').addEventListener('click', () => {
   );
 });
 
+document.getElementById('btn-contactless').addEventListener('click', () => {
+  setStatus(
+    'wallet-status',
+    'Not connected: reading a physical contactless card needs a certified terminal SDK (e.g. Stripe Terminal, Visa Tap to Pay) plus a native app — same limitation as Apple Pay, not something a website can do. See README.',
+    'error'
+  );
+});
+
 document.getElementById('btn-google-pay').addEventListener('click', async () => {
   if (!googlePaymentsClient) {
     setStatus('wallet-status', 'Google Pay script still loading — try again in a second.', 'error');

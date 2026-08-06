@@ -377,29 +377,29 @@ input:focus {
 .wallet-btn {
   width: 100%;
   padding: 14px;
-  margin-bottom: 12px;
-  border: none;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
   border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.apple-pay-btn {
-  background: #000;
-  color: #fff;
-  font-family: -apple-system, sans-serif;
-  font-size: 20px;
+.brand-icon-img {
+  height: 22px;
+  width: auto;
 }
 
-.google-pay-btn {
-  background: #fff;
-  color: #3c4043;
-  border: 1px solid var(--line);
+.card-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--line);
 }
 
 .gpay-g {
