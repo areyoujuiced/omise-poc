@@ -92,6 +92,30 @@ provider like Stripe Terminal or Visa's Tap to Pay SDK, plus a native app. Omise
 currently publish its own Tap to Pay SDK. That's a multi-week integration with a separate
 vendor relationship, not something to bolt onto this POC.
 
+## Recent transactions dashboard
+
+Tap "View recent transactions" from the amount screen. Pulls the last 20 charges via
+Omise's List Charges API (`GET /charges?limit=20&order=reverse_chronological`) — shows
+amount, status, method, and timestamp for each. Read-only, no new charge is created.
+
+## Logos / branding
+
+Drop these into `public/assets/` (same filenames):
+- `omise-logo.png` — shown in the header banner
+- `store-logo.png` — shown in the store banner strip (currently just says "UNIQLO" as text)
+
+**On the Uniqlo branding specifically:** I didn't fetch or embed Uniqlo's actual logo —
+that's someone else's trademark, not something to pull in without a real reason (an
+actual pilot/demo agreement with them). Right now it's just styled text. If you want
+their real logo in there, that's your call to make with an actual asset file, not
+something to source and drop in casually.
+
+## Tap-to-pay for card entry
+
+Still not achievable in a web app — see the note in the Apple Pay / Google Pay section
+above. Nothing new here; the constraint is the same (native app + certified terminal SDK
+required for reading a physical contactless card).
+
 ## How it maps to the Omise API
 
 | Action | Endpoint |

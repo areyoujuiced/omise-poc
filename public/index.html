@@ -12,8 +12,19 @@
 <div class="phone">
 
   <div class="statusbar">
-    <span>Omise Pay</span>
+    <div class="statusbar-left">
+      <span class="statusbar-title">Omise Pay</span>
+      <span class="statusbar-sub">Online Payment on any device!</span>
+    </div>
     <span class="badge">TEST MODE</span>
+  </div>
+
+  <div class="brand-banner">
+    <div class="brand-row">
+      <div class="logo-badge store-badge">
+        <img src="assets/store-logo.png" alt="Store" class="store-logo-img" onerror="this.parentElement.style.display='none'">
+      </div>
+    </div>
   </div>
 
   <!-- Screen 1: amount -->
@@ -24,6 +35,7 @@
       <input type="number" id="amount-input" min="1" step="0.01" value="100.00">
     </label>
     <button class="btn primary" id="btn-to-method">Continue</button>
+    <button class="link-btn" id="btn-to-dashboard">View recent transactions</button>
   </section>
 
   <!-- Screen 2: method select -->
@@ -48,8 +60,8 @@
     <button class="method-btn" id="btn-select-wallet">
       <span class="method-icon">📱</span>
       <span class="method-text">
-        <strong>Apple Pay / Google Pay</strong>
-        <small>Tap phone — no typing needed</small>
+        <strong>Tap to Pay</strong>
+        <small>Apple Pay / Google Pay — tap phone, no typing</small>
       </span>
     </button>
     <button class="method-btn" id="btn-select-truemoney">
@@ -106,13 +118,13 @@
   <!-- Screen 3c: wallet (Apple Pay / Google Pay) -->
   <section class="screen" id="screen-wallet">
     <button class="back" data-back="screen-method">‹ Back</button>
-    <h1>Tap to pay</h1>
+    <h1>Tap to Pay</h1>
     <p class="amount-preview" id="wallet-amount-preview"></p>
     <button class="wallet-btn apple-pay-btn" id="btn-apple-pay">
-       Pay
+       Tap to Pay
     </button>
     <button class="wallet-btn google-pay-btn" id="btn-google-pay">
-      <span class="gpay-g">G</span> Pay
+      <span class="gpay-g">G</span> Pay — Tap to Pay
     </button>
     <p id="wallet-status" class="status"></p>
     <div class="wallet-note">
@@ -139,6 +151,14 @@
     </form>
   </section>
 
+  <!-- Screen: Dashboard -->
+  <section class="screen" id="screen-dashboard">
+    <button class="back" data-back="screen-amount">‹ Back</button>
+    <h1>Recent transactions</h1>
+    <p id="dashboard-status" class="status"></p>
+    <div id="transactions-list" class="tx-list"></div>
+  </section>
+
   <!-- Screen 4: done -->
   <section class="screen" id="screen-done">
     <div class="done-mark">✓</div>
@@ -146,6 +166,11 @@
     <p class="amount-preview" id="done-amount"></p>
     <button class="btn primary" id="btn-new-charge">New charge</button>
   </section>
+
+  <footer class="powered-by">
+    <span>Powered by</span>
+    <img src="assets/omise-logo.png" alt="Omise" class="powered-by-logo" onerror="this.parentElement.style.display='none'">
+  </footer>
 
 </div>
 

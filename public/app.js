@@ -29,6 +29,52 @@ document.querySelectorAll('.back').forEach((btn) => {
   });
 });
 
+// --- Screen 1 -> Dashboard ---
+document.getElementById('btn-to-dashboard').addEventListener('click', async () => {
+  showScreen('screen-dashboard');
+  setStatus('dashboard-status', 'Loading…', 'pending');
+  document.getElementById('transactions-list').innerHTML = '';
+
+  try {
+    const res = await fetch('/api/transactions');
+    const data = await res.json();
+    if (data.object === 'error') {
+      setStatus('dashboard-status', `Failed to load: ${data.message}`, 'error');
+      return;
+    }
+    const charges = data.data || [];
+    if (charges.length === 0) {
+      setStatus('dashboard-status', 'No transactions yet.', 'pending');
+      return;
+    }
+    setStatus('dashboard-status', '', 'pending');
+    document.getElementById('transactions-list').innerHTML = charges.map(renderTxRow).join('');
+  } catch (err) {
+    setStatus('dashboard-status', `Request failed: ${err.message}`, 'error');
+  }
+});
+
+function renderTxRow(charge) {
+  const amountBaht = (charge.amount || 0) / 100;
+  const method = charge.source && charge.source.type
+    ? charge.source.type.replace(/_/g, ' ')
+    : (charge.card ? `card •••• ${charge.card.last_digits}` : 'unknown');
+  const statusClass = charge.status === 'successful' ? 'success'
+    : charge.status === 'failed' ? 'error' : 'pending';
+  const time = charge.created_at ? new Date(charge.created_at).toLocaleString() : '';
+  return `
+    <div class="tx-row">
+      <div class="tx-main">
+        <span class="tx-amount">${formatBaht(amountBaht)}</span>
+        <span class="tx-status ${statusClass}">${charge.status}</span>
+      </div>
+      <div class="tx-meta">
+        <span>${method}</span>
+        <span>${time}</span>
+      </div>
+    </div>`;
+}
+
 // --- Screen 1 -> 2 ---
 document.getElementById('btn-to-method').addEventListener('click', () => {
   currentAmountBaht = parseFloat(document.getElementById('amount-input').value) || 0;

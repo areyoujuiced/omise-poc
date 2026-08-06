@@ -117,5 +117,18 @@ app.get('/api/charge-status/:id', async (req, res) => {
   }
 });
 
+// List recent charges (for the dashboard)
+app.get('/api/transactions', async (req, res) => {
+  try {
+    const response = await fetch('https://api.omise.co/charges?limit=20&order=reverse_chronological', {
+      headers: { Authorization: omiseAuthHeader() },
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Omise POC running at http://localhost:${PORT}`));
