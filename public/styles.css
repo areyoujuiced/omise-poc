@@ -422,31 +422,41 @@ input:focus {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   margin-top: 10px;
-  padding: 20px;
+  padding: 28px 20px;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 12px;
 }
 
+.contactless-badge {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(10, 110, 78, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: contactless-pulse 1.2s ease-in-out infinite;
+}
+
 .contactless-svg {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   color: var(--accent);
-  animation: contactless-pulse 1.4s ease-in-out infinite;
 }
 
 @keyframes contactless-pulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 1; }
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.06); opacity: 1; }
 }
 
 .contactless-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.1em;
-  color: var(--muted);
+  letter-spacing: 0.12em;
+  color: var(--ink);
   margin: 0;
 }
 

@@ -132,15 +132,18 @@
       <span class="card-divider"></span>
       <img src="assets/mastercard-logo.png" alt="Mastercard" class="brand-icon-img">
     </button>
-    <p id="wallet-status" class="status"></p>
     <div id="contactless-visual" class="contactless-visual" style="display:none;">
-      <svg viewBox="0 0 100 100" class="contactless-svg">
-        <path d="M 30 30 A 28 28 0 0 1 30 70" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-        <path d="M 20 20 A 42 42 0 0 1 20 80" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-        <path d="M 10 10 A 56 56 0 0 1 10 90" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-      </svg>
+      <div class="contactless-badge">
+        <svg viewBox="0 0 100 100" class="contactless-svg">
+          <path d="M 25.6 39.4 A 15 15 0 0 1 25.6 60.6" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <path d="M 32.7 32.3 A 25 25 0 0 1 32.7 67.7" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <path d="M 39.8 25.3 A 35 35 0 0 1 39.8 74.8" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+          <rect x="62" y="42" width="28" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="4"/>
+        </svg>
+      </div>
       <p class="contactless-label">TAP TO PAY</p>
     </div>
+    <p id="wallet-status" class="status"></p>
     <div class="wallet-note">
       <strong>Google Pay is live</strong> — real test transaction, using Google's fixed
       test card in TEST mode. <strong>Apple Pay is still a stub</strong> — it needs an
