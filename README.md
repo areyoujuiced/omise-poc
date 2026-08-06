@@ -65,32 +65,61 @@ Open http://localhost:3000
 - Mark the pending test charge "Successful" from your Omise dashboard the same way as QR
   to move it to the confirmation screen
 
-## Apple Pay / Google Pay (UI only — not wired up)
+## Google Pay — now live in this POC
 
-There's a third method on the method-select screen for this. Tapping either button
-shows a message instead of charging — this is intentional, not a bug. It's there to
-show the intended flow (customer taps phone, no typing) without pretending it's live.
+Real integration, using Google's TEST environment (no Google Pay Business Console
+registration needed for testing — only required to go live).
 
-**To make Google Pay actually work:**
-1. Register a merchant ID in the Google Pay Business Console
-2. Add the Google Pay JS button (`https://pay.google.com/gp/p/js/pay.js`)
-3. On payment, Google returns a payment token → forward it to Omise.js → get a card
-   token → charge it exactly like the existing card flow (same `/api/charge-card` route)
-4. See: https://docs.omise.co/googlepay
+**Prerequisite:** Google Pay needs to be enabled on your Omise account. Email
+support@omise.co requesting it. Try the button first — if tokenization fails with a
+generic error, that's the fix.
 
-**To make Apple Pay actually work:**
-1. Register an Apple Merchant ID in the Apple Developer portal
-2. Host a domain verification file at `/.well-known/apple-developer-merchantid-domain-association`
-   (requires HTTPS — Render gives you this automatically)
-3. Use Apple's `ApplePaySession` JS API or the Omise iOS SDK's `setupApplePay()` if building
-   a native app
-4. Forward the resulting payment token to Omise.js, get a card token, charge it the same way
+**How it works:** tapping the Google Pay button opens Google's payment sheet →
+Google returns a token → `Omise.createToken('tokenization', { method: 'googlepay', data: token }, ...)`
+converts it to a card token → charged through the existing `/api/charge-card` route,
+same as a normal card.
 
-**Note:** neither of these is "tap a physical contactless card against the phone" —
-that's a different capability (true Tap to Pay), which requires a certified SDK from a
-provider like Stripe Terminal or Visa's Tap to Pay SDK, plus a native app. Omise doesn't
-currently publish its own Tap to Pay SDK. That's a multi-week integration with a separate
-vendor relationship, not something to bolt onto this POC.
+**Testing it:** in Google's TEST environment, the card number in the token is always
+`4111 1111 1111 1111` — chargeable directly with your Omise test key, no real Google
+Account or real card needed. Just click the button and confirm in the payment sheet
+that appears.
+
+**Going live later** needs a real Google Pay Business Console merchant ID
+(`gatewayMerchantId` currently uses your Omise public key, which is correct per Omise's
+integration — the `merchantId` in `merchantInfo` is what's missing for production).
+See: https://docs.omise.co/googlepay
+
+## Apple Pay — still a stub, and it's a real project, not a quick add
+
+Unlike Google Pay, there's no shortcut here — Apple Pay web integration requires:
+
+1. An **Apple Developer Program membership** ($99/year) — someone with authority to
+   set this up for the company (likely not something to spin up personally)
+2. An **Apple Merchant ID**, created in the Apple Developer portal
+3. Emailing Omise (support@omise.co) with that Merchant ID to get a Certificate Signing
+   Request, which becomes your Payment Processing Certificate
+4. **Domain verification** — Omise sends a domain association file, which needs to be
+   hosted at `/.well-known/apple-developer-merchantid-domain-association` on the live
+   HTTPS domain (Render gives you HTTPS automatically, so that part's fine once you're
+   at this step)
+5. Server-side merchant validation using the Apple Merchant Identity Certificate,
+   per Apple's "Requesting an Apple Pay Payment Session" guide
+6. Testing requires an **Apple sandbox tester account** and only works in **Safari**,
+   ideally on real Apple hardware (Touch ID / Face ID)
+
+This is realistically a multi-week task involving Apple Developer account access,
+not something to build in this POC session. Worth scoping separately if you want to
+actually pursue it — happy to help plan it out once you know who owns the Apple
+Developer account on your side.
+
+See: https://docs.omise.co/applepay
+
+## Tap-to-pay for a physical contactless card
+
+Still not achievable in a web app — this is a different capability from Apple/Google
+Pay above. Reading a physical contactless card requires a certified terminal SDK
+(Stripe Terminal, Visa's Tap to Pay SDK) plus a native app; Omise doesn't currently
+publish one. Separate, bigger initiative from either wallet integration above.
 
 ## Recent transactions dashboard
 

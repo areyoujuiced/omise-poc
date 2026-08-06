@@ -6,6 +6,7 @@
 <title>Omise Pay — Demo</title>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.omise.co/omise.js"></script>
+<script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
 </head>
 <body>
 
@@ -16,7 +17,6 @@
       <span class="statusbar-title">Omise Pay</span>
       <span class="statusbar-sub">Online Payment on any device!</span>
     </div>
-    <span class="badge">TEST MODE</span>
   </div>
 
   <div class="brand-banner">
@@ -128,10 +128,10 @@
     </button>
     <p id="wallet-status" class="status"></p>
     <div class="wallet-note">
-      <strong>Not wired up yet.</strong> This is the intended flow — customer taps
-      their phone, no card entry. Needs an Apple Merchant ID + domain verification
-      (Apple Pay) and a Google Pay Business Console merchant ID (Google Pay) before
-      these buttons can charge for real. See README for what's required.
+      <strong>Google Pay is live</strong> — real test transaction, using Google's fixed
+      test card in TEST mode. <strong>Apple Pay is still a stub</strong> — it needs an
+      Apple Developer account, Merchant ID, and certificates that only your Apple
+      Developer account owner can set up. See README for both.
     </div>
   </section>
 

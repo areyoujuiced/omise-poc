@@ -1,5 +1,7 @@
 let pollInterval = null;
 let currentAmountBaht = 0;
+let omisePublicKey = null;
+let googlePaymentsClient = null;
 
 async function init() {
   const res = await fetch('/api/config');
@@ -8,9 +10,15 @@ async function init() {
     console.warn('No public key returned from /api/config — check your .env file.');
     return;
   }
-  Omise.setPublicKey(config.publicKey);
+  omisePublicKey = config.publicKey;
+  Omise.setPublicKey(omisePublicKey);
 }
 init();
+
+// Called by the Google Pay script tag once it loads
+function onGooglePayLoaded() {
+  googlePaymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
+}
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
@@ -164,17 +172,81 @@ document.getElementById('btn-select-wallet').addEventListener('click', () => {
 document.getElementById('btn-apple-pay').addEventListener('click', () => {
   setStatus(
     'wallet-status',
-    'Not connected: needs an Apple Merchant ID + domain verification file before this can charge a real card.',
+    'Not connected: needs an Apple Developer account, Merchant ID, and domain verification — a separate setup project, not a code change. See README.',
     'error'
   );
 });
 
-document.getElementById('btn-google-pay').addEventListener('click', () => {
-  setStatus(
-    'wallet-status',
-    'Not connected: needs a Google Pay Business Console merchant ID before this can charge a real card.',
-    'error'
-  );
+document.getElementById('btn-google-pay').addEventListener('click', async () => {
+  if (!googlePaymentsClient) {
+    setStatus('wallet-status', 'Google Pay script still loading — try again in a second.', 'error');
+    return;
+  }
+
+  const amountSatang = Math.round(currentAmountBaht * 100);
+  const paymentDataRequest = {
+    apiVersion: 2,
+    apiVersionMinor: 0,
+    allowedPaymentMethods: [{
+      type: 'CARD',
+      parameters: {
+        allowedAuthMethods: ['PAN_ONLY'],
+        allowedCardNetworks: ['VISA', 'MASTERCARD', 'AMEX', 'JCB'],
+      },
+      tokenizationSpecification: {
+        type: 'PAYMENT_GATEWAY',
+        parameters: {
+          gateway: 'omise',
+          gatewayMerchantId: omisePublicKey,
+        },
+      },
+    }],
+    merchantInfo: { merchantName: 'Omise Pay POC' },
+    transactionInfo: {
+      totalPriceStatus: 'FINAL',
+      totalPrice: currentAmountBaht.toFixed(2),
+      currencyCode: 'THB',
+      countryCode: 'TH',
+    },
+  };
+
+  try {
+    setStatus('wallet-status', 'Opening Google Pay…', 'pending');
+    const paymentData = await googlePaymentsClient.loadPaymentData(paymentDataRequest);
+    const gpayToken = paymentData.paymentMethodData.tokenizationData.token;
+
+    setStatus('wallet-status', 'Creating card token…', 'pending');
+    Omise.createToken('tokenization', { method: 'googlepay', data: gpayToken }, async (statusCode, response) => {
+      if (statusCode !== 200) {
+        setStatus('wallet-status', `Tokenization failed: ${response.message || 'is Google Pay enabled on your Omise account?'}`, 'error');
+        return;
+      }
+      setStatus('wallet-status', 'Charging…', 'pending');
+      try {
+        const res = await fetch('/api/charge-card', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: response.id, amount: amountSatang }),
+        });
+        const data = await res.json();
+        if (data.object === 'error') {
+          setStatus('wallet-status', `Charge failed: ${data.message}`, 'error');
+        } else if (data.status === 'successful') {
+          showDone(true, data.id);
+        } else {
+          setStatus('wallet-status', `Charge status: ${data.status}`, 'error');
+        }
+      } catch (err) {
+        setStatus('wallet-status', `Request failed: ${err.message}`, 'error');
+      }
+    });
+  } catch (err) {
+    if (err.statusCode === 'CANCELED') {
+      setStatus('wallet-status', 'Cancelled.', 'pending');
+    } else {
+      setStatus('wallet-status', `Google Pay error: ${err.message || err.statusCode}`, 'error');
+    }
+  }
 });
 
 // --- Card charge ---
