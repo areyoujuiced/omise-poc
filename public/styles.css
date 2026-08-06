@@ -42,12 +42,12 @@ body {
 @media (max-width: 480px) {
   body {
     padding: 0;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .phone {
     max-width: 100%;
-    min-height: 100vh;
+    min-height: 700px;
     border-radius: 0;
     border: none;
     box-shadow: none;
