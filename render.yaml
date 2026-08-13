@@ -12,7 +12,7 @@ services:
         value: 20
       - key: NODE_ENV
         value: production
-      - key: UNIQLO_PUBLIC_KEY
+      - key: OMISE_PUBLIC_KEY
         sync: false
-      - key: UNIQLO_SECRET_KEY
+      - key: OMISE_SECRET_KEY
         sync: false

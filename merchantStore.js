@@ -10,13 +10,14 @@ const bcrypt = require('bcryptjs');
 // Key material is never hardcoded here — this repo is public on GitHub, so
 // each merchant's actual keys live in env vars (set in .env locally, in the
 // Render dashboard in production) and are only referenced by name below.
+// Adding a second pilot merchant needs its own pair of env var names.
 const PILOT_MERCHANTS = [
   {
     username: 'uniqlo',
     // password: "uniqlo-demo"
     passwordHash: '$2a$10$FzrZtJ4dA4.Bbz0EfIyVXuQJ.NsASkoeRVlM8J0HtniserKU5Xkha',
-    publicKey: process.env.UNIQLO_PUBLIC_KEY,
-    secretKey: process.env.UNIQLO_SECRET_KEY,
+    publicKey: process.env.OMISE_PUBLIC_KEY,
+    secretKey: process.env.OMISE_SECRET_KEY,
   },
 ];
 
