@@ -106,6 +106,61 @@ document.getElementById('btn-select-qr').addEventListener('click', () => {
   showScreen('screen-qr');
 });
 
+// --- Screen 2 -> Mobile Banking bank select ---
+document.getElementById('btn-select-mobilebanking').addEventListener('click', () => {
+  document.getElementById('mobilebanking-amount-preview').textContent = formatBaht(currentAmountBaht);
+  setStatus('mobilebanking-status', '', 'pending');
+  document.getElementById('mobilebanking-action-wrap').innerHTML = '';
+  showScreen('screen-mobilebanking');
+});
+
+document.querySelectorAll('.bank-btn').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    clearInterval(pollInterval);
+    const bank = btn.dataset.bank;
+    const amountSatang = Math.round(currentAmountBaht * 100);
+
+    setStatus('mobilebanking-status', `Opening ${btn.textContent}…`, 'pending');
+    document.getElementById('mobilebanking-action-wrap').innerHTML = '';
+
+    try {
+      const res = await fetch('/api/charge-mobilebanking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: amountSatang, bank, returnUri: window.location.href }),
+      });
+      const data = await res.json();
+      if (data.object === 'error') {
+        setStatus('mobilebanking-status', `Failed: ${data.message}`, 'error');
+        return;
+      }
+
+      const authorizeUri = data.authorize_uri || (data.source && data.source.authorize_uri);
+      if (authorizeUri) {
+        document.getElementById('mobilebanking-action-wrap').innerHTML =
+          `<a href="${authorizeUri}" target="_blank" rel="noopener" class="btn primary" style="display:block;text-align:center;text-decoration:none;margin-top:10px;">Continue to ${btn.textContent}</a>`;
+        setStatus('mobilebanking-status', 'Waiting for customer to confirm in their banking app…', 'pending');
+      } else {
+        setStatus('mobilebanking-status', `Waiting for confirmation — ${data.id}`, 'pending');
+      }
+
+      pollInterval = setInterval(async () => {
+        const statusRes = await fetch(`/api/charge-status/${data.id}`);
+        const statusData = await statusRes.json();
+        if (statusData.status === 'successful') {
+          clearInterval(pollInterval);
+          showDone(true, data.id);
+        } else if (statusData.status === 'failed' || statusData.status === 'expired') {
+          clearInterval(pollInterval);
+          setStatus('mobilebanking-status', `Payment ${statusData.status}`, 'error');
+        }
+      }, 3000);
+    } catch (err) {
+      setStatus('mobilebanking-status', `Request failed: ${err.message}`, 'error');
+    }
+  });
+});
+
 // --- Screen 2 -> 3d (TrueMoney Wallet) ---
 document.getElementById('btn-select-truemoney').addEventListener('click', () => {
   document.getElementById('truemoney-amount-preview').textContent = formatBaht(currentAmountBaht);

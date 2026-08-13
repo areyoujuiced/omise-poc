@@ -117,6 +117,43 @@ app.get('/api/charge-status/:id', async (req, res) => {
   }
 });
 
+const MOBILE_BANKING_TYPES = {
+  scb: 'mobile_banking_scb',
+  kbank: 'mobile_banking_kbank',
+  bbl: 'mobile_banking_bbl',
+  bay: 'mobile_banking_bay',
+  ktb: 'mobile_banking_ktb',
+};
+
+// Create a Mobile Banking charge
+app.post('/api/charge-mobilebanking', async (req, res) => {
+  const { amount, bank, returnUri } = req.body;
+  const sourceType = MOBILE_BANKING_TYPES[bank];
+  if (!amount || !sourceType) {
+    return res.status(400).json({ error: 'amount and a valid bank are required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(amount),
+      currency: 'thb',
+      'source[type]': sourceType,
+    });
+    if (returnUri) params.set('return_uri', returnUri);
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // List recent charges (for the dashboard)
 app.get('/api/transactions', async (req, res) => {
   try {

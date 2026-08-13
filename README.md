@@ -65,6 +65,30 @@ Open http://localhost:3000
 - Mark the pending test charge "Successful" from your Omise dashboard the same way as QR
   to move it to the confirmation screen
 
+## Method screen order
+
+Credit Card and QR Code are the primary two, shown first. Mobile Banking is now real
+and third. Tap to Pay and TrueMoney Wallet are marked "Coming soon" and disabled —
+the code behind them still exists and works, just hidden from the main flow until
+you're ready to re-enable them (remove the `disabled` attribute and `.method-btn.disabled`
+class in `index.html` to bring them back).
+
+## Mobile Banking — now live
+
+Real integration, separate from QR/TrueMoney. Uses Omise's Sources API with bank-specific
+types: `mobile_banking_scb`, `mobile_banking_kbank`, `mobile_banking_bbl`,
+`mobile_banking_bay`, `mobile_banking_ktb`.
+
+**How it works:** customer picks their bank → charge is created server-side → Omise
+returns an `authorize_uri` that opens the bank's app (or a web fallback) → customer
+confirms there → same polling pattern as QR/TrueMoney to detect completion.
+
+**Testing it:** same as QR — after tapping a bank, go to your Omise dashboard, find the
+pending test charge, and mark it "Successful" to move it to the confirmation screen
+(no real bank app needed in test mode).
+
+See: https://docs.omise.co/mobile-banking-scb (and equivalent pages per bank)
+
 ## Google Pay — now live in this POC
 
 Real integration, using Google's TEST environment (no Google Pay Business Console

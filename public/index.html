@@ -57,20 +57,43 @@
         <small>Customer scans with banking app</small>
       </span>
     </button>
-    <button class="method-btn" id="btn-select-wallet">
+    <button class="method-btn" id="btn-select-mobilebanking">
+      <span class="method-icon">🏦</span>
+      <span class="method-text">
+        <strong>Mobile Banking</strong>
+        <small>SCB, KBank, Bangkok Bank, Krungsri, KTB</small>
+      </span>
+    </button>
+    <button class="method-btn disabled" id="btn-select-wallet" disabled>
       <span class="method-icon">📱</span>
       <span class="method-text">
         <strong>Tap to Pay</strong>
         <small>Apple Pay / Google Pay — tap phone, no typing</small>
       </span>
+      <span class="coming-soon">Coming soon</span>
     </button>
-    <button class="method-btn" id="btn-select-truemoney">
+    <button class="method-btn disabled" id="btn-select-truemoney" disabled>
       <span class="method-icon">💰</span>
       <span class="method-text">
         <strong>TrueMoney Wallet</strong>
         <small>Pay with phone number + OTP</small>
       </span>
+      <span class="coming-soon">Coming soon</span>
     </button>
+  </section>
+
+  <!-- Screen: Mobile Banking bank select -->
+  <section class="screen" id="screen-mobilebanking">
+    <button class="back" data-back="screen-method">‹ Back</button>
+    <h1>Mobile Banking</h1>
+    <p class="amount-preview" id="mobilebanking-amount-preview"></p>
+    <button class="bank-btn" data-bank="scb">SCB (SCB Easy)</button>
+    <button class="bank-btn" data-bank="kbank">KBank (K PLUS)</button>
+    <button class="bank-btn" data-bank="bbl">Bangkok Bank (Bualuang mBanking)</button>
+    <button class="bank-btn" data-bank="bay">Krungsri (KMA)</button>
+    <button class="bank-btn" data-bank="ktb">Krungthai (KTB NEXT)</button>
+    <p id="mobilebanking-status" class="status"></p>
+    <div id="mobilebanking-action-wrap"></div>
   </section>
 
   <!-- Screen 3a: card entry -->
