@@ -153,6 +153,13 @@ body {
   cursor: pointer;
 }
 
+.login-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin: -8px 0 22px;
+  line-height: 1.5;
+}
+
 .tx-list {
   display: flex;
   flex-direction: column;

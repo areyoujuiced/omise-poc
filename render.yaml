@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: omise-poc
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: NODE_VERSION
+        value: 20
+      - key: NODE_ENV
+        value: production
+      - key: UNIQLO_PUBLIC_KEY
+        sync: false
+      - key: UNIQLO_SECRET_KEY
+        sync: false

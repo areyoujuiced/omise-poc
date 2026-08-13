@@ -27,8 +27,26 @@
     </div>
   </div>
 
+  <!-- Screen 0: login -->
+  <section class="screen active" id="screen-login">
+    <h1>Sign in</h1>
+    <p class="login-sub">Sign in with your Omise Pay merchant account to start taking payments.</p>
+    <form id="login-form">
+      <label>
+        Username
+        <input type="text" id="login-username" autocomplete="username" required>
+      </label>
+      <label>
+        Password
+        <input type="password" id="login-password" autocomplete="current-password" required>
+      </label>
+      <button type="submit" class="btn primary">Sign in</button>
+      <p id="login-status" class="status"></p>
+    </form>
+  </section>
+
   <!-- Screen 1: amount -->
-  <section class="screen active" id="screen-amount">
+  <section class="screen" id="screen-amount">
     <h1>Total Due:</h1>
     <label class="amount-label">
       Amount (THB)
@@ -36,6 +54,7 @@
     </label>
     <button class="btn primary" id="btn-to-method">Continue</button>
     <button class="link-btn" id="btn-to-dashboard">View recent transactions</button>
+    <button class="link-btn" id="btn-logout">Sign out (<span id="logout-username"></span>)</button>
   </section>
 
   <!-- Screen 2: method select -->

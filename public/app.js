@@ -3,17 +3,64 @@ let currentAmountBaht = 0;
 let omisePublicKey = null;
 let googlePaymentsClient = null;
 
-async function init() {
+async function loadOmiseConfig() {
   const res = await fetch('/api/config');
   const config = await res.json();
   if (!config.publicKey) {
-    console.warn('No public key returned from /api/config — check your .env file.');
+    console.warn('No public key returned from /api/config.');
     return;
   }
   omisePublicKey = config.publicKey;
   Omise.setPublicKey(omisePublicKey);
 }
+
+async function init() {
+  const res = await fetch('/api/session');
+  const session = await res.json();
+  if (session.loggedIn) {
+    document.getElementById('logout-username').textContent = session.username;
+    await loadOmiseConfig();
+    showScreen('screen-amount');
+  } else {
+    showScreen('screen-login');
+  }
+}
 init();
+
+const loginForm = document.getElementById('login-form');
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+
+  setStatus('login-status', 'Signing in…', 'pending');
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setStatus('login-status', data.error || 'Sign in failed', 'error');
+      return;
+    }
+    document.getElementById('logout-username').textContent = data.username;
+    loginForm.reset();
+    setStatus('login-status', '', 'pending');
+    await loadOmiseConfig();
+    showScreen('screen-amount');
+  } catch (err) {
+    setStatus('login-status', `Request failed: ${err.message}`, 'error');
+  }
+});
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  clearInterval(pollInterval);
+  await fetch('/api/logout', { method: 'POST' });
+  omisePublicKey = null;
+  showScreen('screen-login');
+});
 
 // Called by the Google Pay script tag once it loads
 function onGooglePayLoaded() {
