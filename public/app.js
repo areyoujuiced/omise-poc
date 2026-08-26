@@ -14,11 +14,26 @@ async function loadOmiseConfig() {
   Omise.setPublicKey(omisePublicKey);
 }
 
+function updateBrandBanner(merchant) {
+  const logoImg = document.getElementById('store-logo-img');
+  const nameText = document.getElementById('store-name-text');
+  if (merchant.logo) {
+    logoImg.src = merchant.logo;
+    logoImg.style.display = 'block';
+    nameText.style.display = 'none';
+  } else {
+    logoImg.style.display = 'none';
+    nameText.textContent = merchant.displayName || '';
+    nameText.style.display = 'inline-block';
+  }
+}
+
 async function init() {
   const res = await fetch('/api/session');
   const session = await res.json();
   if (session.loggedIn) {
     document.getElementById('logout-username').textContent = session.username;
+    updateBrandBanner(session);
     await loadOmiseConfig();
     showScreen('screen-amount');
   } else {
@@ -46,6 +61,7 @@ loginForm.addEventListener('submit', async (e) => {
       return;
     }
     document.getElementById('logout-username').textContent = data.username;
+    updateBrandBanner(data);
     loginForm.reset();
     setStatus('login-status', '', 'pending');
     await loadOmiseConfig();
@@ -59,6 +75,7 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   clearInterval(pollInterval);
   await fetch('/api/logout', { method: 'POST' });
   omisePublicKey = null;
+  updateBrandBanner({ logo: 'assets/store-logo.png', displayName: null });
   showScreen('screen-login');
 });
 

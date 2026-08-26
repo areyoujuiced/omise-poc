@@ -119,6 +119,15 @@ body {
   border-radius: 8px;
 }
 
+.store-name-text {
+  display: none;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--ink);
+  padding: 0 4px;
+}
+
 .powered-by {
   display: flex;
   flex-direction: column;

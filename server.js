@@ -36,7 +36,7 @@ app.post('/api/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid username or password' });
   }
   req.session.merchant = merchant;
-  res.json({ username: merchant.username });
+  res.json({ username: merchant.username, displayName: merchant.displayName, logo: merchant.logo });
 });
 
 app.post('/api/logout', (req, res) => {
@@ -44,7 +44,12 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.get('/api/session', (req, res) => {
-  res.json({ loggedIn: !!req.session.merchant, username: req.session.merchant?.username || null });
+  res.json({
+    loggedIn: !!req.session.merchant,
+    username: req.session.merchant?.username || null,
+    displayName: req.session.merchant?.displayName || null,
+    logo: req.session.merchant?.logo || null,
+  });
 });
 
 // Frontend needs the logged-in merchant's public key to initialize Omise.js
