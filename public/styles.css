@@ -28,7 +28,7 @@ body {
 .phone {
   width: 100%;
   max-width: 380px;
-  min-height: 620px;
+  min-height: 580px;
   background: var(--paper);
   border-radius: 28px;
   border: 1px solid var(--line);
@@ -47,7 +47,7 @@ body {
 
   .phone {
     max-width: 100%;
-    min-height: 650px;
+    min-height: 600px;
     border-radius: 0;
     border: none;
     box-shadow: none;
@@ -92,7 +92,7 @@ body {
 }
 
 .brand-banner {
-  padding: 12px 22px;
+  padding: 9px 22px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -152,7 +152,7 @@ body {
 
 .link-btn {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 8px;
   padding: 8px;
   background: none;
   border: none;
@@ -165,7 +165,7 @@ body {
 .login-sub {
   font-size: 13px;
   color: var(--muted);
-  margin: -8px 0 22px;
+  margin: -8px 0 16px;
   line-height: 1.5;
 }
 
@@ -217,7 +217,7 @@ body {
 .screen {
   display: none;
   flex-direction: column;
-  padding: 22px 22px;
+  padding: 18px 22px;
 }
 
 .screen.active {
@@ -373,7 +373,7 @@ form label {
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .row {
@@ -403,10 +403,10 @@ input:focus {
 }
 
 .status {
-  margin-top: 14px;
+  margin-top: 10px;
   font-size: 13px;
   font-family: var(--mono);
-  min-height: 18px;
+  min-height: 16px;
   line-height: 1.5;
 }
 
