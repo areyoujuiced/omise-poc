@@ -26,7 +26,7 @@ const PILOT_MERCHANTS = [
     // password: "peterpay-demo"
     passwordHash: '$2a$10$POYd5WOyVI/oaTi/CgLw3uEL46jQfkI1kWQPNyKkro7V1eHzeSEt6',
     displayName: 'Peter Pay',
-    logo: null,
+    logo: 'assets/peterpay-logo.png',
     // No live Omise account yet — placeholder keys until Peter sets
     // OMISE_PETERPAY_PUBLIC_KEY / OMISE_PETERPAY_SECRET_KEY in .env / Render.
     publicKey: process.env.OMISE_PETERPAY_PUBLIC_KEY || 'pkey_test_placeholder_peterpay',
