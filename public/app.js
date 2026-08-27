@@ -3,6 +3,8 @@ let currentAmountBaht = 0;
 let omisePublicKey = null;
 let googlePaymentsClient = null;
 
+const OMISE_LOGO = 'assets/omise-logo.png';
+
 async function loadOmiseConfig() {
   const res = await fetch('/api/config');
   const config = await res.json();
@@ -37,6 +39,7 @@ async function init() {
     await loadOmiseConfig();
     showScreen('screen-amount');
   } else {
+    updateBrandBanner({ logo: OMISE_LOGO, displayName: null });
     showScreen('screen-login');
   }
 }
@@ -75,7 +78,7 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   clearInterval(pollInterval);
   await fetch('/api/logout', { method: 'POST' });
   omisePublicKey = null;
-  updateBrandBanner({ logo: 'assets/store-logo.png', displayName: null });
+  updateBrandBanner({ logo: OMISE_LOGO, displayName: null });
   showScreen('screen-login');
 });
 
