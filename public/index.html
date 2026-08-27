@@ -44,6 +44,61 @@
       <button type="submit" class="btn primary">Sign in</button>
       <p id="login-status" class="status"></p>
     </form>
+    <button type="button" class="link-btn" id="btn-to-register">New merchant? Register</button>
+  </section>
+
+  <!-- Screen: register -->
+  <section class="screen" id="screen-register">
+    <button class="back" data-back="screen-login">‹ Back</button>
+    <h1>Register</h1>
+    <p class="login-sub">Create a merchant account and connect your Omise keys.</p>
+    <form id="register-form">
+      <label>
+        Username
+        <input type="text" id="register-username" autocomplete="username" required>
+      </label>
+      <label>
+        Password
+        <input type="password" id="register-password" autocomplete="new-password" required>
+      </label>
+      <label>
+        Store name
+        <input type="text" id="register-storename" required>
+      </label>
+      <label>
+        Store logo (optional)
+        <input type="file" id="register-logo" accept="image/*">
+      </label>
+      <label>
+        Omise public key
+        <input type="text" id="register-publickey" autocomplete="off" required>
+      </label>
+      <label>
+        Omise secret key
+        <input type="password" id="register-secretkey" autocomplete="off" required>
+      </label>
+      <button type="submit" class="btn primary">Create account</button>
+      <p id="register-status" class="status"></p>
+    </form>
+  </section>
+
+  <!-- Screen: re-enter Omise keys (self-registered merchants, each login) -->
+  <section class="screen" id="screen-login-keys">
+    <h1>Connect your Omise account</h1>
+    <p class="login-sub">Your keys aren't stored between sessions — enter them again to finish signing in.</p>
+    <form id="login-keys-form">
+      <label>
+        Omise public key
+        <input type="text" id="login-keys-publickey" autocomplete="off" required>
+      </label>
+      <label>
+        Omise secret key
+        <input type="password" id="login-keys-secretkey" autocomplete="off" required>
+      </label>
+      <button type="submit" class="btn primary">Continue</button>
+      <p id="login-keys-status" class="status"></p>
+    </form>
+    <button type="button" class="link-btn" id="btn-cancel-login-keys">Cancel</button>
   </section>
 
   <!-- Screen 1: amount -->

@@ -30,6 +30,14 @@ function updateBrandBanner(merchant) {
   }
 }
 
+async function completeLogin(data) {
+  document.getElementById('logout-username').textContent = data.username;
+  updateBrandBanner(data);
+  setStatus('login-status', '', 'pending');
+  await loadOmiseConfig();
+  showScreen('screen-amount');
+}
+
 async function init() {
   const res = await fetch('/api/session');
   const session = await res.json();
@@ -63,15 +71,95 @@ loginForm.addEventListener('submit', async (e) => {
       setStatus('login-status', data.error || 'Sign in failed', 'error');
       return;
     }
-    document.getElementById('logout-username').textContent = data.username;
-    updateBrandBanner(data);
     loginForm.reset();
-    setStatus('login-status', '', 'pending');
-    await loadOmiseConfig();
-    showScreen('screen-amount');
+    if (data.needsKeys) {
+      setStatus('login-status', '', 'pending');
+      showScreen('screen-login-keys');
+      return;
+    }
+    await completeLogin(data);
   } catch (err) {
     setStatus('login-status', `Request failed: ${err.message}`, 'error');
   }
+});
+
+document.getElementById('btn-to-register').addEventListener('click', () => {
+  setStatus('login-status', '', 'pending');
+  showScreen('screen-register');
+});
+
+function readLogoFile(input) {
+  const file = input.files[0];
+  if (!file) return Promise.resolve(null);
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+const registerForm = document.getElementById('register-form');
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('register-username').value;
+  const password = document.getElementById('register-password').value;
+  const displayName = document.getElementById('register-storename').value;
+  const publicKey = document.getElementById('register-publickey').value;
+  const secretKey = document.getElementById('register-secretkey').value;
+
+  setStatus('register-status', 'Creating account…', 'pending');
+  try {
+    const logo = await readLogoFile(document.getElementById('register-logo'));
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, displayName, logo, publicKey, secretKey }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setStatus('register-status', data.error || 'Registration failed', 'error');
+      return;
+    }
+    registerForm.reset();
+    setStatus('register-status', '', 'pending');
+    await completeLogin(data);
+  } catch (err) {
+    setStatus('register-status', `Request failed: ${err.message}`, 'error');
+  }
+});
+
+const loginKeysForm = document.getElementById('login-keys-form');
+loginKeysForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const publicKey = document.getElementById('login-keys-publickey').value;
+  const secretKey = document.getElementById('login-keys-secretkey').value;
+
+  setStatus('login-keys-status', 'Connecting…', 'pending');
+  try {
+    const res = await fetch('/api/login-keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ publicKey, secretKey }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setStatus('login-keys-status', data.error || 'Failed to connect keys', 'error');
+      return;
+    }
+    loginKeysForm.reset();
+    setStatus('login-keys-status', '', 'pending');
+    await completeLogin(data);
+  } catch (err) {
+    setStatus('login-keys-status', `Request failed: ${err.message}`, 'error');
+  }
+});
+
+document.getElementById('btn-cancel-login-keys').addEventListener('click', async () => {
+  loginKeysForm.reset();
+  setStatus('login-keys-status', '', 'pending');
+  await fetch('/api/logout', { method: 'POST' });
+  showScreen('screen-login');
 });
 
 document.getElementById('btn-logout').addEventListener('click', async () => {

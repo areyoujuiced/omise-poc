@@ -6,14 +6,16 @@ const merchantStore = require('./merchantStore');
 
 const app = express();
 app.set('trust proxy', 1); // needed for secure cookies behind Render's proxy
-app.use(express.json());
+app.use(express.json({ limit: '3mb' })); // registered-merchant logos arrive as base64 data URIs
 app.use(session({
   secret: process.env.SESSION_SECRET || 'omise-poc-dev-secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 8 * 60 * 60 * 1000, // 8 hours
+    httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
   },
 }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -29,14 +31,58 @@ function requireAuth(req, res, next) {
   next();
 }
 
+// Self-service registration. Omise keys are required up front but are
+// never handed to merchantStore — they go straight onto this session and
+// nowhere else (see merchantStore.js for why).
+app.post('/api/register', async (req, res) => {
+  const { username, password, displayName, logo, publicKey, secretKey } = req.body;
+  if (!publicKey || !secretKey) {
+    return res.status(400).json({ error: 'Omise public and secret keys are required.' });
+  }
+  const result = await merchantStore.register(username, password, displayName, logo);
+  if (result.error) {
+    return res.status(400).json({ error: result.error });
+  }
+  req.session.merchant = {
+    username: result.merchant.username,
+    displayName: result.merchant.displayName,
+    logo: result.merchant.logo,
+    publicKey,
+    secretKey,
+  };
+  res.json({ username: result.merchant.username, displayName: result.merchant.displayName, logo: result.merchant.logo });
+});
+
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  const merchant = await merchantStore.authenticate(username, password);
+  const merchant = await merchantStore.verifyPassword(username, password);
   if (!merchant) {
     return res.status(401).json({ error: 'Invalid username or password' });
   }
-  req.session.merchant = merchant;
-  res.json({ username: merchant.username, displayName: merchant.displayName, logo: merchant.logo });
+  if (merchant.publicKey) {
+    // Pilot merchant — keys already resolved from env vars, login completes now.
+    req.session.merchant = merchant;
+    return res.json({ username: merchant.username, displayName: merchant.displayName, logo: merchant.logo });
+  }
+  // Self-registered merchant — keys were never stored, so login isn't
+  // complete until they're re-entered.
+  req.session.pendingMerchant = { username: merchant.username, displayName: merchant.displayName, logo: merchant.logo };
+  res.json({ username: merchant.username, displayName: merchant.displayName, logo: merchant.logo, needsKeys: true });
+});
+
+// Second step of login for self-registered merchants only — attaches the
+// freshly-entered keys to the session that /api/login left pending.
+app.post('/api/login-keys', (req, res) => {
+  const { publicKey, secretKey } = req.body;
+  if (!req.session.pendingMerchant) {
+    return res.status(401).json({ error: 'No login in progress.' });
+  }
+  if (!publicKey || !secretKey) {
+    return res.status(400).json({ error: 'Omise public and secret keys are required.' });
+  }
+  req.session.merchant = { ...req.session.pendingMerchant, publicKey, secretKey };
+  delete req.session.pendingMerchant;
+  res.json({ username: req.session.merchant.username, displayName: req.session.merchant.displayName, logo: req.session.merchant.logo });
 });
 
 app.post('/api/logout', (req, res) => {

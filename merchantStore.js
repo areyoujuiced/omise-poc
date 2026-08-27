@@ -34,9 +34,44 @@ const PILOT_MERCHANTS = [
   },
 ];
 
-// Returns { username, displayName, logo, publicKey, secretKey } on success, null on bad credentials.
-async function authenticate(username, password) {
-  const merchant = PILOT_MERCHANTS.find((m) => m.username === username);
+// Merchants who signed up through the Register flow. Only the password
+// hash and branding live here — Omise keys are never stored, hashed or
+// otherwise. The merchant re-enters their keys every time they log in and
+// those keys exist only in that session's server-side memory (server.js
+// holds them on req.session.merchant, never here). This list is in-memory
+// only and resets on server restart, same as the keys it deliberately
+// doesn't store.
+const registeredMerchants = [];
+
+function findMerchant(username) {
+  return PILOT_MERCHANTS.find((m) => m.username === username)
+    || registeredMerchants.find((m) => m.username === username);
+}
+
+// Creates a self-registered merchant. Returns { merchant } on success or
+// { error } on a validation failure. Never touches Omise keys — those are
+// the caller's job to attach to the session directly after this returns.
+async function register(username, password, displayName, logo) {
+  username = (username || '').trim();
+  displayName = (displayName || '').trim();
+  if (!username || !password || !displayName) {
+    return { error: 'Username, password, and store name are required.' };
+  }
+  if (findMerchant(username)) {
+    return { error: 'That username is already taken.' };
+  }
+  const passwordHash = await bcrypt.hash(password, 10);
+  const merchant = { username, passwordHash, displayName, logo: logo || null };
+  registeredMerchants.push(merchant);
+  return { merchant };
+}
+
+// Verifies a username/password pair. Returns the merchant record on success
+// (pilot merchants come back with publicKey/secretKey attached; registered
+// merchants never do — the caller decides what to do about that), or null
+// on bad credentials.
+async function verifyPassword(username, password) {
+  const merchant = findMerchant(username);
   const ok = merchant && await bcrypt.compare(password || '', merchant.passwordHash);
   if (!ok) return null;
   return {
@@ -48,4 +83,4 @@ async function authenticate(username, password) {
   };
 }
 
-module.exports = { authenticate };
+module.exports = { register, verifyPassword };
