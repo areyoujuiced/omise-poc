@@ -31,6 +31,18 @@ function requireAuth(req, res, next) {
   next();
 }
 
+// The branding + capability fields the frontend needs, stripped of keys.
+// enabledMethods is undefined (omitted from JSON) for merchants without a
+// restriction, which the frontend treats as "everything's available."
+function merchantPublicShape(merchant) {
+  return {
+    username: merchant.username,
+    displayName: merchant.displayName,
+    logo: merchant.logo,
+    enabledMethods: merchant.enabledMethods,
+  };
+}
+
 // Self-service registration. Omise keys are required up front but are
 // never handed to merchantStore — they go straight onto this session and
 // nowhere else (see merchantStore.js for why).
@@ -47,10 +59,11 @@ app.post('/api/register', async (req, res) => {
     username: result.merchant.username,
     displayName: result.merchant.displayName,
     logo: result.merchant.logo,
+    enabledMethods: result.merchant.enabledMethods,
     publicKey,
     secretKey,
   };
-  res.json({ username: result.merchant.username, displayName: result.merchant.displayName, logo: result.merchant.logo });
+  res.json(merchantPublicShape(req.session.merchant));
 });
 
 app.post('/api/login', async (req, res) => {
@@ -62,12 +75,17 @@ app.post('/api/login', async (req, res) => {
   if (merchant.publicKey) {
     // Pilot merchant — keys already resolved from env vars, login completes now.
     req.session.merchant = merchant;
-    return res.json({ username: merchant.username, displayName: merchant.displayName, logo: merchant.logo });
+    return res.json(merchantPublicShape(merchant));
   }
   // Self-registered merchant — keys were never stored, so login isn't
   // complete until they're re-entered.
-  req.session.pendingMerchant = { username: merchant.username, displayName: merchant.displayName, logo: merchant.logo };
-  res.json({ username: merchant.username, displayName: merchant.displayName, logo: merchant.logo, needsKeys: true });
+  req.session.pendingMerchant = {
+    username: merchant.username,
+    displayName: merchant.displayName,
+    logo: merchant.logo,
+    enabledMethods: merchant.enabledMethods,
+  };
+  res.json({ ...merchantPublicShape(merchant), needsKeys: true });
 });
 
 // Second step of login for self-registered merchants only — attaches the
@@ -82,7 +100,7 @@ app.post('/api/login-keys', (req, res) => {
   }
   req.session.merchant = { ...req.session.pendingMerchant, publicKey, secretKey };
   delete req.session.pendingMerchant;
-  res.json({ username: req.session.merchant.username, displayName: req.session.merchant.displayName, logo: req.session.merchant.logo });
+  res.json(merchantPublicShape(req.session.merchant));
 });
 
 app.post('/api/logout', (req, res) => {
@@ -92,9 +110,11 @@ app.post('/api/logout', (req, res) => {
 app.get('/api/session', (req, res) => {
   res.json({
     loggedIn: !!req.session.merchant,
-    username: req.session.merchant?.username || null,
-    displayName: req.session.merchant?.displayName || null,
-    logo: req.session.merchant?.logo || null,
+    ...(req.session.merchant ? merchantPublicShape(req.session.merchant) : {
+      username: null,
+      displayName: null,
+      logo: null,
+    }),
   });
 });
 

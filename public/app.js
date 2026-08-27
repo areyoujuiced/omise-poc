@@ -30,9 +30,38 @@ function updateBrandBanner(merchant) {
   }
 }
 
+// Methods that are otherwise live and can be gated per merchant (e.g. a
+// live Omise account that's only been approved for QR so far). Tap to Pay
+// and TrueMoney aren't here — they're globally "coming soon" regardless of
+// merchant, handled by their own disabled markup in index.html.
+const RESTRICTABLE_METHODS = {
+  card: 'btn-select-card',
+  qr: 'btn-select-qr',
+  mobilebanking: 'btn-select-mobilebanking',
+};
+
+function updateMethodAvailability(enabledMethods) {
+  Object.entries(RESTRICTABLE_METHODS).forEach(([key, btnId]) => {
+    const btn = document.getElementById(btnId);
+    const enabled = !enabledMethods || enabledMethods.includes(key);
+    btn.disabled = !enabled;
+    btn.classList.toggle('disabled', !enabled);
+    let tag = btn.querySelector('.coming-soon');
+    if (!enabled && !tag) {
+      tag = document.createElement('span');
+      tag.className = 'coming-soon';
+      tag.textContent = 'Coming soon';
+      btn.appendChild(tag);
+    } else if (enabled && tag) {
+      tag.remove();
+    }
+  });
+}
+
 async function completeLogin(data) {
   document.getElementById('logout-username').textContent = data.username;
   updateBrandBanner(data);
+  updateMethodAvailability(data.enabledMethods);
   setStatus('login-status', '', 'pending');
   await loadOmiseConfig();
   showScreen('screen-amount');
@@ -44,6 +73,7 @@ async function init() {
   if (session.loggedIn) {
     document.getElementById('logout-username').textContent = session.username;
     updateBrandBanner(session);
+    updateMethodAvailability(session.enabledMethods);
     await loadOmiseConfig();
     showScreen('screen-amount');
   } else {

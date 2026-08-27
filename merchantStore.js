@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 // Pilot merchants — each has their own Omise key pair, looked up dynamically
 // at login instead of one static key for everyone. This list is a stand-in
 // for core's merchant provisioning API (currently being spec'd) — once that
-// exists, only authenticate() below needs to change to call it instead of
+// exists, only findMerchant() below needs to change to call it instead of
 // searching this array. Nothing outside this file should know the keys came
 // from a hardcoded list rather than a live lookup.
 //
@@ -31,6 +31,10 @@ const PILOT_MERCHANTS = [
     // OMISE_PETERPAY_PUBLIC_KEY / OMISE_PETERPAY_SECRET_KEY in .env / Render.
     publicKey: process.env.OMISE_PETERPAY_PUBLIC_KEY || 'pkey_test_placeholder_peterpay',
     secretKey: process.env.OMISE_PETERPAY_SECRET_KEY || 'skey_test_placeholder_peterpay',
+    // Live Omise account is only approved for QR/PromptPay so far — Card
+    // and Mobile Banking stay greyed out until Omise enables them. Remove
+    // this once the rest of the account is approved.
+    enabledMethods: ['qr'],
   },
 ];
 
@@ -78,6 +82,7 @@ async function verifyPassword(username, password) {
     username: merchant.username,
     displayName: merchant.displayName,
     logo: merchant.logo,
+    enabledMethods: merchant.enabledMethods,
     publicKey: merchant.publicKey,
     secretKey: merchant.secretKey,
   };
