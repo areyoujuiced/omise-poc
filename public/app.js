@@ -588,7 +588,8 @@ async function startQrCharge() {
 // --- Done screen ---
 function showDone(success, chargeId) {
   document.getElementById('done-title').textContent = success ? 'Payment received' : 'Payment failed';
-  document.getElementById('done-amount').textContent = `${formatBaht(currentAmountBaht)} — ${chargeId}`;
+  document.getElementById('done-amount').textContent = formatBaht(currentAmountBaht);
+  document.getElementById('done-charge-id').textContent = chargeId;
   showScreen('screen-done');
 }
 
