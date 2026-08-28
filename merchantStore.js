@@ -88,4 +88,4 @@ async function verifyPassword(username, password) {
   };
 }
 
-module.exports = { register, verifyPassword };
+module.exports = { register, verifyPassword, findMerchant };

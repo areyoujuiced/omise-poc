@@ -269,5 +269,133 @@ app.get('/api/transactions', requireAuth, async (req, res) => {
   }
 });
 
+// --- Public coaching checkout (/coaching) ---
+// No login — always charges through the 'peterpay' pilot merchant's Omise
+// account. Package prices are fixed server-side so a customer can't tamper
+// with the amount client-side before submitting.
+const COACHING_MERCHANT_USERNAME = 'peterpay';
+const COACHING_BRANDING = { displayName: "Peter's Coaching", logo: null };
+const COACHING_PACKAGES = {
+  single: { label: 'Single Session', amount: 260000 },
+  pack4: { label: '4-Lesson Pack', amount: 900000 },
+  pack8: { label: '8-Lesson Pack', amount: 1650000 },
+};
+
+function coachingMerchant() {
+  return merchantStore.findMerchant(COACHING_MERCHANT_USERNAME);
+}
+
+app.get('/coaching', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'coaching.html'));
+});
+
+app.get('/api/coaching/config', (req, res) => {
+  const merchant = coachingMerchant();
+  res.json({
+    publicKey: merchant.publicKey,
+    displayName: COACHING_BRANDING.displayName,
+    logo: COACHING_BRANDING.logo,
+    enabledMethods: merchant.enabledMethods,
+    packages: Object.fromEntries(
+      Object.entries(COACHING_PACKAGES).map(([id, p]) => [id, { label: p.label, amount: p.amount }])
+    ),
+  });
+});
+
+app.post('/api/coaching/charge-card', async (req, res) => {
+  const { token, packageId } = req.body;
+  const pkg = COACHING_PACKAGES[packageId];
+  if (!token || !pkg) {
+    return res.status(400).json({ error: 'token and a valid packageId are required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(pkg.amount),
+      currency: 'thb',
+      card: token,
+    });
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(coachingMerchant().secretKey),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/coaching/charge-qr', async (req, res) => {
+  const { packageId } = req.body;
+  const pkg = COACHING_PACKAGES[packageId];
+  if (!pkg) {
+    return res.status(400).json({ error: 'a valid packageId is required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(pkg.amount),
+      currency: 'thb',
+      'source[type]': 'promptpay',
+    });
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(coachingMerchant().secretKey),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/coaching/charge-mobilebanking', async (req, res) => {
+  const { packageId, bank, returnUri } = req.body;
+  const pkg = COACHING_PACKAGES[packageId];
+  const sourceType = MOBILE_BANKING_TYPES[bank];
+  if (!pkg || !sourceType) {
+    return res.status(400).json({ error: 'a valid packageId and bank are required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(pkg.amount),
+      currency: 'thb',
+      'source[type]': sourceType,
+    });
+    if (returnUri) params.set('return_uri', returnUri);
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(coachingMerchant().secretKey),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/coaching/charge-status/:id', async (req, res) => {
+  try {
+    const response = await fetch(`https://api.omise.co/charges/${req.params.id}`, {
+      headers: { Authorization: omiseAuthHeader(coachingMerchant().secretKey) },
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Omise POC running at http://localhost:${PORT}`));
