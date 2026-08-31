@@ -397,5 +397,119 @@ app.get('/api/coaching/charge-status/:id', async (req, res) => {
   }
 });
 
+// --- Public Peter Pay checkout (/peterpay) ---
+// Same idea as /coaching — no login, always charges through the 'peterpay'
+// pilot merchant's Omise account — but with a free-form amount instead of
+// fixed packages, i.e. the main checkout flow pre-authenticated as Peter Pay.
+function peterpayMerchant() {
+  return merchantStore.findMerchant('peterpay');
+}
+
+app.get('/peterpay', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'peterpay.html'));
+});
+
+app.get('/api/peterpay/config', (req, res) => {
+  const merchant = peterpayMerchant();
+  res.json({
+    publicKey: merchant.publicKey,
+    displayName: merchant.displayName,
+    logo: merchant.logo,
+    enabledMethods: merchant.enabledMethods,
+  });
+});
+
+app.post('/api/peterpay/charge-card', async (req, res) => {
+  const { token, amount } = req.body;
+  if (!token || !amount) {
+    return res.status(400).json({ error: 'token and amount are required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(amount),
+      currency: 'thb',
+      card: token,
+    });
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(peterpayMerchant().secretKey),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/peterpay/charge-qr', async (req, res) => {
+  const { amount } = req.body;
+  if (!amount) {
+    return res.status(400).json({ error: 'amount is required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(amount),
+      currency: 'thb',
+      'source[type]': 'promptpay',
+    });
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(peterpayMerchant().secretKey),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/peterpay/charge-mobilebanking', async (req, res) => {
+  const { amount, bank, returnUri } = req.body;
+  const sourceType = MOBILE_BANKING_TYPES[bank];
+  if (!amount || !sourceType) {
+    return res.status(400).json({ error: 'amount and a valid bank are required' });
+  }
+  try {
+    const params = new URLSearchParams({
+      amount: String(amount),
+      currency: 'thb',
+      'source[type]': sourceType,
+    });
+    if (returnUri) params.set('return_uri', returnUri);
+    const response = await fetch('https://api.omise.co/charges', {
+      method: 'POST',
+      headers: {
+        Authorization: omiseAuthHeader(peterpayMerchant().secretKey),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/peterpay/charge-status/:id', async (req, res) => {
+  try {
+    const response = await fetch(`https://api.omise.co/charges/${req.params.id}`, {
+      headers: { Authorization: omiseAuthHeader(peterpayMerchant().secretKey) },
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Omise POC running at http://localhost:${PORT}`));

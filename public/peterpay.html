@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peter Pay — Book & Pay</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.omise.co/omise.js"></script>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="statusbar">
+    <div class="statusbar-left">
+      <span class="statusbar-title">Omise Pay</span>
+      <span class="statusbar-sub">Online Payment on any device!</span>
+    </div>
+  </div>
+
+  <div class="brand-banner">
+    <div class="brand-row">
+      <div class="logo-badge store-badge">
+        <img src="assets/omise-logo.png" alt="" class="store-logo-img" id="store-logo-img" style="display:none;" onerror="this.style.display='none'">
+        <span class="store-name-text" id="store-name-text"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen: amount -->
+  <section class="screen active" id="screen-amount">
+    <h1>Total Due:</h1>
+    <label class="amount-label">
+      Amount (THB)
+      <input type="number" id="amount-input" min="1" step="0.01" value="1.00">
+    </label>
+    <button class="btn primary" id="btn-to-method">Continue</button>
+  </section>
+
+  <!-- Screen: method select -->
+  <section class="screen" id="screen-method">
+    <button class="back" data-back="screen-amount">‹ Back</button>
+    <h1>How is the customer paying?</h1>
+    <p class="amount-preview" id="method-amount-preview"></p>
+    <button class="method-btn" id="btn-select-qr">
+      <span class="method-icon">▦</span>
+      <span class="method-text">
+        <strong>QR Code</strong>
+        <small>Customer scans with banking app</small>
+      </span>
+    </button>
+    <button class="method-btn" id="btn-select-mobilebanking">
+      <span class="method-icon">🏦</span>
+      <span class="method-text">
+        <strong>Mobile Banking</strong>
+        <small>SCB, KBank, Bangkok Bank, Krungsri, KTB</small>
+      </span>
+    </button>
+    <button class="method-btn" id="btn-select-card">
+      <span class="method-icon">💳</span>
+      <span class="method-text">
+        <strong>Credit Card</strong>
+        <small>Customer enters card details</small>
+      </span>
+    </button>
+  </section>
+
+  <!-- Screen: Mobile Banking bank select -->
+  <section class="screen" id="screen-mobilebanking">
+    <button class="back" data-back="screen-method">‹ Back</button>
+    <h1>Mobile Banking</h1>
+    <p class="amount-preview" id="mobilebanking-amount-preview"></p>
+    <button class="bank-btn" data-bank="scb">SCB (SCB Easy)</button>
+    <button class="bank-btn" data-bank="kbank">KBank (K PLUS)</button>
+    <button class="bank-btn" data-bank="bbl">Bangkok Bank (Bualuang mBanking)</button>
+    <button class="bank-btn" data-bank="bay">Krungsri (KMA)</button>
+    <button class="bank-btn" data-bank="ktb">Krungthai (KTB NEXT)</button>
+    <p id="mobilebanking-status" class="status"></p>
+    <div id="mobilebanking-action-wrap"></div>
+  </section>
+
+  <!-- Screen: card entry -->
+  <section class="screen" id="screen-card">
+    <button class="back" data-back="screen-method">‹ Back</button>
+    <h1>Card details</h1>
+    <p class="amount-preview" id="card-amount-preview"></p>
+    <form id="card-form">
+      <label>
+        Cardholder name
+        <input type="text" id="card-name" placeholder="JANE DOE" required>
+      </label>
+      <label>
+        Card number
+        <input type="text" id="card-number" inputmode="numeric" placeholder="4242 4242 4242 4242" required>
+      </label>
+      <div class="row">
+        <label>
+          Exp. month
+          <input type="text" id="card-exp-month" inputmode="numeric" placeholder="12" maxlength="2" required>
+        </label>
+        <label>
+          Exp. year
+          <input type="text" id="card-exp-year" inputmode="numeric" placeholder="2027" maxlength="4" required>
+        </label>
+        <label>
+          CVV
+          <input type="text" id="card-cvv" inputmode="numeric" placeholder="123" maxlength="4" required>
+        </label>
+      </div>
+      <button type="submit" class="btn primary">Charge card</button>
+      <p id="card-status" class="status"></p>
+    </form>
+  </section>
+
+  <!-- Screen: QR -->
+  <section class="screen" id="screen-qr">
+    <button class="back" data-back="screen-method">‹ Back</button>
+    <h1>Scan to pay</h1>
+    <p class="amount-preview" id="qr-amount-preview"></p>
+    <div id="qr-image-wrap" class="qr-wrap"></div>
+    <p id="qr-status" class="status"></p>
+  </section>
+
+  <!-- Screen: done -->
+  <section class="screen" id="screen-done">
+    <div class="done-mark">✓</div>
+    <h1 id="done-title">Payment received</h1>
+    <p class="amount-preview" id="done-amount"></p>
+    <p class="thank-you">Thank you for your payment!</p>
+    <p class="done-charge-id" id="done-charge-id"></p>
+    <p class="done-charge-note">You may use this to track the payment transaction with your merchant.</p>
+    <button class="btn primary" id="btn-new-charge">New charge</button>
+  </section>
+
+  <footer class="powered-by">
+    <span>Powered by</span>
+    <img src="assets/omise-logo.png" alt="Omise" class="powered-by-logo" onerror="this.parentElement.style.display='none'">
+  </footer>
+
+</div>
+
+<script src="peterpay.js"></script>
+</body>
+</html>
