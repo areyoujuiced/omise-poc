@@ -241,7 +241,7 @@ function showDone(success, chargeId) {
 }
 
 document.getElementById('btn-new-charge').addEventListener('click', () => {
-  document.getElementById('amount-input').value = '1.00';
+  document.getElementById('amount-input').value = '100.00';
   showScreen('screen-amount');
 });
 
