@@ -27,14 +27,13 @@ const PILOT_MERCHANTS = [
     passwordHash: '$2a$10$POYd5WOyVI/oaTi/CgLw3uEL46jQfkI1kWQPNyKkro7V1eHzeSEt6',
     displayName: 'Peter Pay',
     logo: 'assets/peterpay-logo.png',
-    // No live Omise account yet — placeholder keys until Peter sets
-    // OMISE_PETERPAY_PUBLIC_KEY / OMISE_PETERPAY_SECRET_KEY in .env / Render.
+    // Live keys, set via OMISE_PETERPAY_PUBLIC_KEY / OMISE_PETERPAY_SECRET_KEY
+    // in Render. Placeholders here only cover local dev before .env is set.
     publicKey: process.env.OMISE_PETERPAY_PUBLIC_KEY || 'pkey_test_placeholder_peterpay',
     secretKey: process.env.OMISE_PETERPAY_SECRET_KEY || 'skey_test_placeholder_peterpay',
-    // Live Omise account is only approved for QR/PromptPay so far — Card
-    // and Mobile Banking stay greyed out until Omise enables them. Remove
-    // this once the rest of the account is approved.
-    enabledMethods: ['qr'],
+    // QR and Mobile Banking are approved on the live account; Card isn't
+    // yet, so it stays greyed out until Omise enables it.
+    enabledMethods: ['qr', 'mobilebanking'],
   },
 ];
 
