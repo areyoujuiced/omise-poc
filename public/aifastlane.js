@@ -78,7 +78,7 @@ function escapeHtml(str) {
 }
 
 async function loadIdeas() {
-  const res = await fetch('/api/fastlane/ideas');
+  const res = await fetch('/api/aifastlane/ideas');
   const ideas = await res.json();
   renderList(ideas);
 }
@@ -103,7 +103,7 @@ form.addEventListener('submit', async (e) => {
 
   setStatus('Checking…', 'pending');
   try {
-    const res = await fetch('/api/fastlane/ideas', {
+    const res = await fetch('/api/aifastlane/ideas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
