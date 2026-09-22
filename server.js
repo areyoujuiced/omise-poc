@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const merchantStore = require('./merchantStore');
+const fastlaneStore = require('./fastlaneStore');
 
 const app = express();
 app.set('trust proxy', 1); // needed for secure cookies behind Render's proxy
@@ -509,6 +510,26 @@ app.get('/api/peterpay/charge-status/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// --- AI Fast Lane eligibility screener (/fastlane) ---
+// Internal tool, not a payment flow — business team submits an idea,
+// answers a few risk questions, and gets a Fast Lane / Standard Track /
+// Needs Review verdict per the criteria in the Fast Lane proposal doc.
+app.get('/fastlane', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'fastlane.html'));
+});
+
+app.post('/api/fastlane/ideas', (req, res) => {
+  const result = fastlaneStore.submitIdea(req.body);
+  if (result.error) {
+    return res.status(400).json({ error: result.error });
+  }
+  res.json(result.idea);
+});
+
+app.get('/api/fastlane/ideas', (req, res) => {
+  res.json(fastlaneStore.listIdeas());
 });
 
 const PORT = process.env.PORT || 3000;

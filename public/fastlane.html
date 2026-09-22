@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Fast Lane — Idea Screener</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="fastlane.css">
+</head>
+<body class="fl-body">
+
+<div class="fl-page">
+
+  <header class="fl-header">
+    <h1>AI Fast Lane — Idea Screener</h1>
+    <p>Submit an idea from Joint Product Discovery and get a first read on whether it can run
+      through the AI Fast Lane, or should stay on the standard engineering track. This is a
+      self-assessment — Engineering still confirms the final risk classification.</p>
+  </header>
+
+  <section class="fl-card">
+    <h2>Submit an idea</h2>
+    <form id="idea-form">
+      <label>
+        Idea title
+        <input type="text" id="f-title" required>
+      </label>
+
+      <div class="fl-row">
+        <label>
+          Your name
+          <input type="text" id="f-submitter" required>
+        </label>
+        <label>
+          Team (optional)
+          <input type="text" id="f-team">
+        </label>
+      </div>
+
+      <label>
+        What's the idea, and what would it change?
+        <textarea id="f-description" rows="4" required></textarea>
+      </label>
+
+      <div class="fl-questions">
+        <div class="fl-question" data-field="touchesPayments">
+          <p>Does it touch payment processing, authorization, or settlement?</p>
+          <div class="fl-options"></div>
+        </div>
+        <div class="fl-question" data-field="touchesAuthSecurity">
+          <p>Does it touch authentication, login, or core security systems?</p>
+          <div class="fl-options"></div>
+        </div>
+        <div class="fl-question" data-field="touchesCore">
+          <p>Does it touch Omise's core production platform, rather than a side tool?</p>
+          <div class="fl-options"></div>
+        </div>
+        <div class="fl-question" data-field="touchesSensitiveData">
+          <p>Does it involve sensitive customer data or anything regulatory (KYC, compliance, PII)?</p>
+          <div class="fl-options"></div>
+        </div>
+        <div class="fl-question" data-field="largeScope">
+          <p>Is the scope large, with significant dependencies across multiple teams?</p>
+          <div class="fl-options"></div>
+        </div>
+        <div class="fl-question" data-field="notReversible">
+          <p>If something breaks, would it be hard to roll back or turn off quickly?</p>
+          <div class="fl-options"></div>
+        </div>
+        <div class="fl-question" data-field="internalToolOnly">
+          <p>Is this mainly an internal tool for a team, rather than something customers use directly?</p>
+          <div class="fl-options" data-binary="1"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn primary fl-submit">Check eligibility</button>
+      <p id="form-status" class="status"></p>
+    </form>
+
+    <div id="verdict-wrap" class="fl-verdict-wrap" hidden>
+      <div id="verdict-card" class="fl-verdict"></div>
+    </div>
+  </section>
+
+  <section class="fl-card">
+    <h2>Submitted ideas</h2>
+    <div id="ideas-list" class="fl-list"></div>
+  </section>
+
+</div>
+
+<script src="fastlane.js"></script>
+</body>
+</html>
