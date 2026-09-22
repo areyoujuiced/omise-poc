@@ -13,11 +13,17 @@
   padding: 40px 20px 80px;
 }
 
+.fl-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 16px;
+}
+
 .fl-logo {
   height: 64px;
   width: auto;
   display: block;
-  margin: 0 0 16px;
   border-radius: 10px;
 }
 
