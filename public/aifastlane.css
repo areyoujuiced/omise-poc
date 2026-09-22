@@ -13,9 +13,12 @@
   padding: 40px 20px 80px;
 }
 
-.fl-header h1 {
-  font-size: 26px;
-  margin: 0 0 10px;
+.fl-logo {
+  height: 64px;
+  width: auto;
+  display: block;
+  margin: 0 0 16px;
+  border-radius: 10px;
 }
 
 .fl-header p {
@@ -23,6 +26,29 @@
   font-size: 14px;
   line-height: 1.6;
   max-width: 60ch;
+}
+
+.fl-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+  padding: 18px;
+  background: var(--ink);
+  border-radius: 12px;
+}
+
+.fl-footer span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.fl-footer-logo {
+  height: 26px;
 }
 
 .fl-card {
